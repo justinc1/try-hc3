@@ -1,0 +1,18 @@
+---
+- name: Example iso_info module
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  environment:
+    # - SC_HOST: https://1.2.3.4
+    # - SC_USERNAME: admin
+    # - SC_PASSWORD: todo
+
+  tasks:
+    - name: List all ISOs
+      scale_computing.hypercore.iso_info:
+      register: iso_results
+
+    - name: Show all ISOs
+      ansible.builtin.debug:
+        var: iso_results
