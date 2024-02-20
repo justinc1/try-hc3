@@ -1,0 +1,44 @@
+---
+- name: Upload a virtual disk image from http link to HyperCore
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    image_url: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
+    # image_url: https://github.com/ddemlow/RestAPIExamples/blob/master/ubuntu18_04-cloud-init/ubuntu18cloudimage.qcow2
+    image_filename: "{{ image_url | split('/') | last }}"
+    image_remove_old: false
+
+  tasks:
+    # ------------------------------------------------------
+    - name: Download Virtual Disk from URL - {{ image_filename }}
+      ansible.builtin.get_url: # TODO: what if file doesn't download completely?
+        url: "{{ image_url }}"
+        dest: /tmp/{{ image_filename }}
+        mode: "0644"
+
+    - name: (Optionally) remove existing Virtual Disk from HyperCore - {{ image_filename }}
+      when: image_remove_old | bool
+      scale_computing.hypercore.virtual_disk:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - uploading-{{ image_filename }}
+        - "{{ image_filename }}"
+
+    # ------------------------------------------------------
+    - name: Upload Virtual Disk to HyperCore - {{ image_filename }}
+      scale_computing.hypercore.virtual_disk:
+        source: /tmp/{{ image_filename }}
+        name: "{{ image_filename }}"
+        state: present
+
+    # ------------------------------------------------------
+    - name: Get Information About the uploaded Virtual Disk in HyperCore
+      scale_computing.hypercore.virtual_disk_info:
+        name: "{{ image_filename }}"
+      register: result
+
+    - name: Show uploaded disk info
+      ansible.builtin.debug:
+        var: result.records[0]
