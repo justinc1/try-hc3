@@ -1,0 +1,91 @@
+---
+- name: Attach a virtual disk to VM
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    vm_name: jc-ub2004
+    virtual_disk_name: focal-server-cloudimg-amd64.img
+    # attach virtual_disk_name to vm_name to this disk type/slot.
+    vm_disk_type: virtio_disk
+    vm_disk_slot: 1
+
+  tasks:
+    # ------------------------------------------------------
+    - name: List old VM {{ vm_name }}
+      scale_computing.hypercore.vm_info:
+        vm_name: "{{ vm_name }}"
+      register: vm_info_result
+
+    - name: Fail if VM already exists
+      ansible.builtin.assert:
+        that:
+          - vm_info_result.records | length == 0
+
+    # ------------------------------------------------------
+    - name: List virtual disk {{ virtual_disk_name }}
+      scale_computing.hypercore.virtual_disk_info:
+        name: "{{ virtual_disk_name }}"
+      register: virtual_disk_info_result
+
+    - name: Check virtual disk is present
+      ansible.builtin.assert:
+        that:
+          - virtual_disk_info_result.records | length == 1
+
+    # ------------------------------------------------------
+    - name: Create VM {{ vm_name }}
+      scale_computing.hypercore.vm:
+        vm_name: "{{ vm_name }}"
+        tags:
+          - justin
+          - aap24
+          - ansible_enable
+          - ansible_user__ubuntu
+        memory: "{{ '2 GB' | human_to_bytes }}"
+        vcpu: 2
+        disks: []
+        nics:
+          - type: virtio
+            vlan: 0
+        state: present
+        power_state: shutdown
+        operating_system: os_other
+        cloud_init:
+          user_data: "{{ lookup('file', '../data/cloud-init-user-data-cloudimage.yml') }}"
+      register: vm_result
+
+    - name: Show the info about VM {{ vm_name }}
+      ansible.builtin.debug:
+        var: vm_result
+      register: vm_info_result
+
+    # ------------------------------------------------------
+    - name: Attach virtual disk to VM - {{ vm_name + ", " + virtual_disk_name + " " + vm_disk_type + ":" + vm_disk_slot | string }}
+      scale_computing.hypercore.virtual_disk_attach:
+        name: "{{ virtual_disk_name }}"
+        vm_name: "{{ vm_name }}"
+        disk:
+          type: "{{ vm_disk_type }}"
+          disk_slot: "{{ vm_disk_slot }}"
+          disable_snapshotting: false
+          size: "{{ '11 GB' | human_to_bytes }}"
+      register: attach_result
+
+    - name: Show attach action result
+      ansible.builtin.debug:
+        var: attach_result
+
+    - name: Set boot device
+      scale_computing.hypercore.vm_boot_devices:
+        vm_name: "{{ vm_name }}"
+        state: set
+        items:
+          - type: "{{ vm_disk_type }}"
+            disk_slot: "{{ vm_disk_slot }}"
+        shutdown_timeout: 30
+
+    - name: Start VM
+      scale_computing.hypercore.vm_params:
+        vm_name: "{{ vm_name }}"
+        power_state: start

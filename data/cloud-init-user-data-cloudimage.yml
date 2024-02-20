@@ -1,0 +1,33 @@
+#cloud-config
+# https://help.ubuntu.com/community/CloudInit
+# https://www.linode.com/docs/guides/manage-users-with-cloud-init/
+
+# apt_upgrade: true
+ssh_import_id: ["gh:justinc1"]
+ssh_pwauth: true
+disable_root: false
+
+users:
+  - default
+#    plain_text_passwd: ubuntup
+#    ssh_authorized_keys:
+#      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE8SNzKoqj89P6Z9kiYEhgbDogY0Y7YXSS68W2B5b2u7 justin_cinkelj@jcnuc
+  - name: jst
+    groups: sudo
+    shell: /bin/bash
+#    sudo:
+#      - ALL=(ALL) NOPASSWD:ALL
+#    plain_text_passwd: jstp
+#    ssh_authorized_keys:
+#      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE8SNzKoqj89P6Z9kiYEhgbDogY0Y7YXSS68W2B5b2u7 justin_cinkelj@jcnuc
+chpasswd:
+  list: |
+    ubuntu:ubuntup
+    jst:jstp
+  expire: false
+packages:
+  - qemu-guest-agent
+runcmd:
+#  - apt update
+#  - apt -y install qemu-guest-agent
+  - systemctl start qemu-guest-agent
