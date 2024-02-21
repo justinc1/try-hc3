@@ -11,6 +11,18 @@
 
   tasks:
     # ------------------------------------------------------
+    - name: Get Information About old Virtual Disk in HyperCore
+      scale_computing.hypercore.virtual_disk_info:
+        name: "{{ image_filename }}"
+      register: result
+
+    - name: Eearly exit if disk already exists
+      ansible.builtin.meta: end_play
+      when:
+        - not image_remove_old
+        - result.records | length == 1
+
+    # ------------------------------------------------------
     - name: Download Virtual Disk from URL - {{ image_filename }}
       ansible.builtin.get_url: # TODO: what if file doesn't download completely?
         url: "{{ image_url }}"
