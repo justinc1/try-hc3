@@ -41,7 +41,7 @@
           - justin
           - aap24
           - ansible_enable
-          - ansible_user__ubuntu
+          - ansible_user__jst
         memory: "{{ '2 GB' | human_to_bytes }}"
         vcpu: 2
         disks: []

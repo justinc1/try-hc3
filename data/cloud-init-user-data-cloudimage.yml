@@ -9,17 +9,15 @@ disable_root: false
 
 users:
   - default
-#    plain_text_passwd: ubuntup
-#    ssh_authorized_keys:
-#      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE8SNzKoqj89P6Z9kiYEhgbDogY0Y7YXSS68W2B5b2u7 justin_cinkelj@jcnuc
   - name: jst
     groups: sudo
     shell: /bin/bash
-#    sudo:
-#      - ALL=(ALL) NOPASSWD:ALL
-#    plain_text_passwd: jstp
-#    ssh_authorized_keys:
-#      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE8SNzKoqj89P6Z9kiYEhgbDogY0Y7YXSS68W2B5b2u7 justin_cinkelj@jcnuc
+    sudo:
+      - ALL=(ALL) NOPASSWD:ALL
+    plain_text_passwd: jstp
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE8SNzKoqj89P6Z9kiYEhgbDogY0Y7YXSS68W2B5b2u7 justin_cinkelj@jcnuc
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDHZiOah//rTqYpeT70J/ORqyzwrinIkXp9wlUxcI7I0Ht4nGiF6euX0f/jgkjJO2wEaa5oEmO6WNC1Sq1mSOGw2Bxf2+sKkFstHrXw3j5NRey6WvYDrGBKaM/jtoTIorWPDHN06T4lEXavN1iox/3vygDjVMF8Lrv/wV8eCqhVCulnOo4yCF19FXZuNLFvQR2liSWFjYtKL3CXfulw0xFTvADLFFJ7wZd41/SW7jSURu3h5TqspZOCeUylMbbOP63laWDJ3K8WlPx8hx7qrj85+tawWvQ44+d2vJlvc/pwBaU15zr4ml9FmVQDkABULi+ZcXGnM6Ll8m6zfm1obH/6JUYQAQw95n48PHsPB0gG14cyR+Z3khpumHqoGVyixHFCEHGkAwRxy8jWl+cHnzYegC6Mqj9bC72z7hI4meq8cHfMdF5VraNKrNH9fkRuK5hoWw2uWjI0qWGSFn0jGe5PMKACqWK7MapJGJYIWqwMMvtV7vsVZ6N2xloOL/2K2oU= justin_cinkelj@jcpc---hc3-aap-test
 chpasswd:
   list: |
     ubuntu:ubuntup
