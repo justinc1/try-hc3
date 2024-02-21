@@ -1,0 +1,3 @@
+---
+plugin: scale_computing.hypercore.hypercore
+look_for_ansible_enable: true
