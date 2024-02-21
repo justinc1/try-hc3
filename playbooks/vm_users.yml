@@ -1,0 +1,31 @@
+---
+- name: List users
+  hosts: all
+  gather_facts: false
+  vars:
+    files1:
+      - file: users
+        path: /etc/passwd
+      - file: groups
+        path: /etc/group
+
+  tasks:
+    - name: Get users
+      ansible.builtin.getent:
+        database: passwd
+
+    - name: List regular users
+      ansible.builtin.debug:
+        msg: username={{ ue.username  }} uid={{ ue.uservalues.2 }}
+      loop: "{{ ansible_facts.getent_passwd | dict2items(key_name='username', value_name='uservalues') }}"
+      loop_control:
+        loop_var: ue  # user_entry
+        label: "{{ ue.username }}"
+      when:
+        - ue.uservalues.2 | int >= 1000
+        - ue.uservalues.2 | int < 65534
+
+    - name: Show user with uid=1000
+      ansible.builtin.debug:
+        msg: "{{ ansible_facts.getent_passwd | dict2items(key_name='username', value_name='uservalues') | selectattr('uservalues.2', 'eq', '1000') }}"
+
