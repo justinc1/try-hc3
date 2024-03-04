@@ -1,0 +1,21 @@
+---
+- name: Wait until VM gets IPv4 address
+  hosts: localhost
+#  connection: local
+  gather_facts: false
+  vars:
+    wait_delay: 60
+
+  tasks:
+    # ------------------------------------------------------
+    - name: Print hello
+      ansible.builtin.debug:
+        msg: Try hello
+
+    - name: Wait N sec - {{ wait_delay }}
+      ansible.builtin.command: sleep {{ wait_delay }}
+      ignore_errors: True
+
+    - name: Print bye
+      ansible.builtin.debug:
+        msg: Try bye
